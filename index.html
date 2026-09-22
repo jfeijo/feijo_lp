@@ -1050,9 +1050,9 @@
         </a>
       </div>
       <div class="lang-sw">
-        <button class="lang-b on" id="lpt" onclick="lang('pt')">PT</button>
+        <button class="lang-b on" id="lpt" onclick="setLang('pt')">PT</button>
         <span class="lang-sep">/</span>
-        <button class="lang-b" id="len" onclick="lang('en')">EN</button>
+        <button class="lang-b" id="len" onclick="setLang('en')">EN</button>
       </div>
     </div>
   </nav>
@@ -1433,7 +1433,7 @@ const YT_API_KEY = 'AIzaSyBojeCEs4_m0EPHLmL0HI7xM6GNDo2xPO0';
 const YT_HANDLE  = 'ojoaofeijo';
 const MAX_VIDS   = 7;
 
-function lang(l) {
+function setLang(l) {
   document.body.className = l === 'en' ? 'en' : '';
   document.getElementById('lpt').classList.toggle('on', l === 'pt');
   document.getElementById('len').classList.toggle('on', l === 'en');
