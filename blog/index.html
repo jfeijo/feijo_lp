@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog | João Feijó</title>
+  <meta name="description" content="Investigações, análises e bastidores sobre rock clássico. Os mesmos artigos que João Feijó conta em vídeo, em formato escrito.">
+  <link rel="canonical" href="https://joaofeijo.com.br/blog">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/blog.css">
+</head>
+<body>
+
+  <div class="vhs-scanlines" aria-hidden="true"></div>
+  <div class="vhs-grain" aria-hidden="true"></div>
+  <div class="vhs-vignette" aria-hidden="true"></div>
+
+  <nav class="nav" id="nav">
+    <a href="/" class="nav-brand">João Feijó</a>
+    <div class="nav-r">
+      <div class="nav-links">
+        <a href="/#about" class="nav-link"><span data-lang="pt">Sobre</span><span data-lang="en">About</span></a>
+        <a href="/#videos" class="nav-link"><span data-lang="pt">Vídeos</span><span data-lang="en">Videos</span></a>
+        <a href="/#partnerships" class="nav-link"><span data-lang="pt">Parcerias</span><span data-lang="en">Partnerships</span></a>
+        <a href="/blog" class="nav-link current">Blog</a>
+        <a href="/#contact" class="nav-link"><span data-lang="pt">Contato</span><span data-lang="en">Contact</span></a>
+      </div>
+      <div class="lang-sw">
+        <button class="lang-b on" id="lpt" onclick="setLang('pt')">PT</button>
+        <span class="lang-sep">/</span>
+        <button class="lang-b" id="len" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="sect-tight pad">
+    <div class="max-w">
+      <p class="sect-num label reveal">Blog</p>
+      <h1 class="blog-hero-h reveal">
+        <span data-lang="pt">As histórias, <span class="dim">por escrito.</span></span>
+        <span data-lang="en">The stories, <span class="dim">in writing.</span></span>
+      </h1>
+      <p class="blog-hero-txt reveal">
+        <span data-lang="pt">Investigações, análises e bastidores sobre rock clássico. Os mesmos temas dos vídeos, aprofundados em texto.</span>
+        <span data-lang="en">Investigations, analysis and behind the scenes on classic rock. The same themes from the videos, deepened in writing.</span>
+      </p>
+    </div>
+  </header>
+
+  <section class="pad" style="padding-bottom: clamp(96px, 11vw, 176px);">
+    <div class="max-w" id="blog-list">
+      <div class="blog-coming reveal">
+        <span data-lang="pt">Primeiros artigos em breve.</span>
+        <span data-lang="en">First articles coming soon.</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p class="foot-copy"><span data-lang="pt">João Feijó &copy; 2026</span><span data-lang="en">João Feijó &copy; 2026</span></p>
+    <nav class="foot-links">
+      <a href="https://youtube.com/@ojoaofeijo" target="_blank" rel="noopener" class="foot-link">YouTube</a>
+      <a href="https://instagram.com/jfeijo" target="_blank" rel="noopener" class="foot-link">Instagram</a>
+      <a href="mailto:joaoantoniofeijo@gmail.com" class="foot-link">Email</a>
+      <a href="#" class="foot-link" onclick="scrollTo({top:0,behavior:'smooth'});return false">&#8593; Top</a>
+    </nav>
+  </footer>
+
+  <script src="/assets/blog.js"></script>
+  <script>
+    async function loadPosts() {
+      var container = document.getElementById('blog-list');
+      try {
+        var res = await fetch('/blog/posts.json', { cache: 'no-store' });
+        var posts = await res.json();
+        if (!Array.isArray(posts) || posts.length === 0) return;
+
+        posts.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+
+        var cardsHtml = posts.map(function (p) {
+          var dateLabel = new Date(p.date + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+          var cover = p.cover ? '<img class="blog-card-cover" src="' + p.cover + '" alt="" loading="lazy">' : '';
+          var tag = (p.tags && p.tags[0]) ? p.tags[0] : 'Artigo';
+          return '<a class="blog-card reveal" href="/blog/' + p.slug + '">' +
+            cover +
+            '<div class="blog-meta"><span class="blog-tag">' + tag + '</span><span class="blog-tag">&middot;</span><span class="blog-tag">' + dateLabel + '</span></div>' +
+            '<h3 class="blog-title">' + p.title + '</h3>' +
+            '<p class="blog-excerpt">' + p.excerpt + '</p>' +
+          '</a>';
+        }).join('');
+
+        container.innerHTML = '<div class="blog-grid" style="margin-top:0">' + cardsHtml + '</div>';
+        container.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('vis'); });
+      } catch (e) { /* keep "coming soon" fallback */ }
+    }
+    loadPosts();
+  </script>
+</body>
+</html>

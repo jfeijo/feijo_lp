@@ -1045,6 +1045,7 @@
         <a href="#partnerships" class="nav-link">
           <span data-lang="pt">Parcerias</span><span data-lang="en">Partnerships</span>
         </a>
+        <a href="#blog" class="nav-link">Blog</a>
         <a href="#contact" class="nav-link">
           <span data-lang="pt">Contato</span><span data-lang="en">Contact</span>
         </a>
@@ -1353,9 +1354,11 @@
         <span data-lang="pt">As mesmas histórias que conto no YouTube, em formato escrito. Investigações, análises, bastidores e reflexões sobre o rock e o processo criativo.</span>
         <span data-lang="en">The same stories I tell on YouTube, in written form. Investigations, analysis, behind the scenes, and reflections on rock and the creative process.</span>
       </p>
-      <div class="blog-coming reveal">
-        <span data-lang="pt">Primeiros artigos em breve.</span>
-        <span data-lang="en">First articles coming soon.</span>
+      <div id="blog-container">
+        <div class="blog-coming reveal">
+          <span data-lang="pt">Primeiros artigos em breve.</span>
+          <span data-lang="en">First articles coming soon.</span>
+        </div>
       </div>
     </div>
   </section>
@@ -1680,6 +1683,41 @@ async function initYouTube() {
 }
 
 initYouTube();
+
+/* BLOG PREVIEW (latest posts from /blog/posts.json) */
+async function loadBlogPreview() {
+  var container = document.getElementById('blog-container');
+  if (!container) return;
+  try {
+    var res = await fetch('/blog/posts.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    var posts = await res.json();
+    if (!Array.isArray(posts) || posts.length === 0) return;
+
+    posts.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+    var latest = posts.slice(0, 3);
+
+    var cardsHtml = latest.map(function (p) {
+      var dateLabel = new Date(p.date + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+      var cover = p.cover ? '<img class="blog-card-cover" src="' + p.cover + '" alt="" loading="lazy">' : '';
+      var tag = (p.tags && p.tags[0]) ? p.tags[0] : 'Artigo';
+      return '<a class="blog-card reveal" href="/blog/' + p.slug + '">' +
+        cover +
+        '<div class="blog-meta"><span class="blog-tag">' + tag + '</span><span class="blog-tag">&middot;</span><span class="blog-tag">' + dateLabel + '</span></div>' +
+        '<h3 class="blog-title">' + p.title + '</h3>' +
+        '<p class="blog-excerpt">' + p.excerpt + '</p>' +
+      '</a>';
+    }).join('');
+
+    container.innerHTML = '<div class="blog-grid">' + cardsHtml + '</div>' +
+      '<div class="blog-more"><a href="/blog" class="btn-w">' +
+      '<span data-lang="pt">Ver todos os artigos</span><span data-lang="en">View all articles</span>' +
+      '</a></div>';
+
+    container.querySelectorAll('.reveal').forEach(function (el) { revObs.observe(el); });
+  } catch (e) { /* keep "coming soon" fallback already in the DOM */ }
+}
+loadBlogPreview();
 </script>
 </body>
 </html>
